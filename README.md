@@ -16,17 +16,9 @@ sh Miniconda3-latest-Linux-x86_64.sh
 pip install -r requirements.txt
 ```
 
-
-
 ### Export environment variable
+In your linux terminal, export model regestry credential:
 
-export your variable in the ~/.bashrc as follow:
-
-Edit the bashrc file:
-```Bash
-vim ~/.bashrc
-```
-# environment variable
 export mongo_username="your_username"
 export mongo_password="your_password"
 export mongo_host="model_regestry_host"
