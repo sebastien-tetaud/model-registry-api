@@ -16,6 +16,28 @@ sh Miniconda3-latest-Linux-x86_64.sh
 pip install -r requirements.txt
 ```
 
+
+
+### Export environment variable
+
+export your variable in the ~/.bashrc as follow:
+
+Edit the bashrc file:
+```Bash
+vim ~/.bashrc
+```
+# environment variable
+export mongo_username="your_username"
+export mongo_password="your_password"
+export mongo_host="model_regestry_host"
+export mongo_auth_db="database_name"
+
+Once edited, run the following cli:
+
+```Bash
+source ~/.bashrc
+```
+
 ## Run the FastAPI
 
 Run the following command:
