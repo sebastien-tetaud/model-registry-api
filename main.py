@@ -67,17 +67,23 @@ class StoreModelRequest(BaseModel):
         }
 
 
-
-
-
-
 class DeleteModelRequest(BaseModel):
-    database: str
-    collection: str
-    modelId: str  # The ID of the model to delete
+    database: str = "model_registry"
+    collection: str = "llm"
+    modelId: str = "66daf3cae7e64e7bde7f46a0"  # example ObjectId
 
 
-# Endpoint to create a user
+class SearchModelRequest(BaseModel):
+    database: str = "model_registry"
+    collection: str = "llm"
+    modelId: str = "66daf3cae7e64e7bde7f46a0"  # example ObjectId
+
+
+class GetModelRequest(BaseModel):
+    database: str = "model_registry"
+    collection: str = "llm"
+    modelId: str = "66daf3cae7e64e7bde7f46a0"  # example ObjectId
+
 @app.post("/create_user")
 def create_user(request: CreateUserRequest, client: MongoClient = Depends(authenticate)):
     """
@@ -117,7 +123,6 @@ def delete_user(request: DeleteUserRequest, client: MongoClient = Depends(authen
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# Optional: Endpoint to generate a password (if using PasswordGenerator)
 @app.get("/generate_password")
 def generate_password(length: int = 12, special_chars: bool = False, credentials: HTTPBasicCredentials = Depends(authenticate)):
     """
@@ -130,7 +135,6 @@ def generate_password(length: int = 12, special_chars: bool = False, credentials
     return {"password": password_generator.generate()}
 
 
-# Endpoint to store a model
 @app.post("/store_model")
 async def store_model(request: StoreModelRequest, client: MongoClient = Depends(authenticate)):
     """
@@ -178,6 +182,38 @@ def delete_model(request: DeleteModelRequest, client: MongoClient = Depends(auth
         return {"message": f"Model with ID '{request.modelId}' deleted successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/search_model")
+def search_model(request: SearchModelRequest, client: MongoClient = Depends(authenticate)):
+    """
+    Endpoint to search for a model by its model_id in MongoDB.
+    """
+
+    dm = DbManager(client=client)
+    result = dm.search_model(database=request.database,
+                             collection=request.collection,
+                             model_id=request.modelId)
+    if result:
+        return {"status": "success", "model": result["metadata"]}
+    else:
+        raise HTTPException(status_code=404, detail="Model not found")
+
+
+@app.post("/get_model")
+async def get_model(request: GetModelRequest, client: MongoClient = Depends(authenticate)):
+    """
+    Endpoint to search for a model by its model_id in MongoDB.
+    """
+
+    dm = DbManager(client=client)
+    result = dm.get_model(database=request.database,
+                             collection=request.collection,
+                             model_id=request.modelId)
+    if result:
+        return {"status": "success", "model": result["metadata"]}
+    else:
+        raise HTTPException(status_code=404, detail="Model not found")
+
 
 if __name__ == "__main__":
     import uvicorn
